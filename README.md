@@ -16,6 +16,7 @@ ctest --test-dir build --output-on-failure
 
 ### Default construction
 `Vector<T> vector;` - empty, no allocation.
+<br><br>
 Tests: `Create_Object_With_Default`
 
 ### Initializer list
