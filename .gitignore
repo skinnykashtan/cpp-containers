@@ -1,0 +1,85 @@
+# Build trees
+build/
+out/
+bin/
+lib/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+CMakeScripts/
+cmake_install.cmake
+CTestTestfile.cmake
+install_manifest.txt
+compile_commands.json
+CMakeUserPresets.json
+Testing/
+_deps/
+Makefile
+*.ninja
+.ninja_deps
+.ninja_log
+
+# Objects and binaries
+*.o
+*.obj
+*.lo
+*.slo
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.out
+*.app
+*.gch
+*.pch
+*.mod
+*.smod
+
+# Debug / linker junk (MSVC, GCC)
+*.pdb
+*.ilk
+*.exp
+*.idb
+*.ipdb
+*.iobj
+*.dSYM/
+*.su
+*.lai
+*.d
+
+# Visual Studio
+.vs/
+*.vcxproj.user
+*.vcproj.*.user
+*.suo
+*.ncb
+*.opensdf
+*.sdf
+*.db
+*.opendb
+ipch/
+*.aps
+*.opt
+*.plg
+
+# Other IDEs / language servers
+.idea/
+.vscode/
+.cache/
+*.user
+*.code-workspace
+
+# Package managers
+vcpkg_installed/
+conan.lock
+conanbuildinfo.*
+conaninfo.txt
+graph_info.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
