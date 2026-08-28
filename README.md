@@ -37,7 +37,7 @@ A throwing copy is cleaned up by the algorithm (prefix in the *new* block); `cat
 Only after that succeeds: `std::destroy_at(data_ + i)` on the old objects (pointer arithmetic, not `data_[i]`), `::operator delete(data_)`, then `data_ = newBlock` and `capacity_ = newCapacity`. `size_` stays the same.
 
 ### PushBack
-Two overloads. Both grow if `size_ == capacity_`, then start an object's lifetime at `data_ + size_` (placement new, not `operator=`), then `size_++`.
+Two overloads. Both grow if `size_ == capacity_`, then start an object's lifetime at `data_ + size_` (placement new, not `operator=`), then `++size_`.
 Empty buffer goes to capacity `2`; afterwards `capacity + capacity / 2`.
 `PushBack(const T&)` copy-constructs the new element.
 `PushBack(T&&)` move-constructs it - `std::move(value)` is required inside the function: the parameter has a name, so it is an lvalue even though its type is `T&&`.
@@ -48,6 +48,15 @@ Tests:<br>
 `PushBack_Fills_String_ReAlloc_Capacity` - same grow for `std::string` (still the noexcept-move path).
 `ReAlloc_Copies_When_Move_Is_Not_Noexcept` - helper type whose move is not `noexcept`; lvalue `PushBack` so inserts copy; after grow `copyCounter == 5`, `moveCounter == 0` (two extra copies from relocating `obj1`/`obj2`).
 `ReAlloc_Moves_When_Move_Is_Noexcept` - same scenario with a `noexcept` move ctor: `copyCounter == 3` (three inserts), `moveCounter == 2` (relocate).
+
+### PopBack
+`PopBack` is `noexcept` - it does not throw. `std::destroy_at` on the last object and `--size_` do not throw for a normal `T` (destructors should not throw).
+If `this->empty()` is true, it `return`s right away. Otherwise `size_ - 1` would wrap (`size_t`) and `destroy_at` would hit invalid storage - UB.
+The last live object is at `data_ + size_ - 1` (`size_` is a count, so the last index is `size_ - 1`). `std::destroy_at(data_ + size_ - 1)` ends its lifetime, then `--size_` so `size()` matches what is still alive.
+<br><br>
+Tests:<br>
+`PopBack_Method` - `{2, 3, 4, 5}`, two `PopBack()` calls; `size` goes `4 → 3 → 2`, `back()` is `4` then `3`, vector stays non-empty.
+
 
 ## Array
 

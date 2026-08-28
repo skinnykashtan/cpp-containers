@@ -41,10 +41,20 @@ public:
         return size_ == 0;
     }
 
+    T& back() noexcept {
+        return data_[size_-1];
+    }
+
+    const T& back() const noexcept {
+        return data_[size_-1];
+    }
+
     void ReAlloc(std::size_t newCapacity);
 
     void PushBack(const T& value);
     void PushBack(T&& value);
+
+    void PopBack() noexcept;
 };
 
 template<typename T>
@@ -82,7 +92,7 @@ void Vector<T>::PushBack(const T& value) {
     }
 
     ::new(data_ + size_) T(value);
-    size_++;
+    ++size_;
 }
 
 template<typename T>
@@ -93,7 +103,15 @@ void Vector<T>::PushBack(T&& value) {
     }
 
     ::new(data_ + size_) T(std::move(value));
-    size_++;
+    ++size_;
+}
+
+template<typename T>
+void Vector<T>::PopBack() noexcept {
+    if (this->empty()) return;
+
+    std::destroy_at(data_ + size_ - 1);
+    --size_;
 }
 
 template<typename T>

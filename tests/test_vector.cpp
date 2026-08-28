@@ -127,5 +127,31 @@ TEST(Vector, ReAlloc_Moves_When_Move_Is_Noexcept) {
     EXPECT_EQ(2, MoveOnReAlloc::moveCounter);
 }
 
+TEST(Vector, Back_Method) {
+    Vector<std::string> vector{"s1", "s2"};
+
+    vector.back() = "s3";
+    ASSERT_EQ(2, vector.Size());
+    ASSERT_EQ("s3", vector[1]);
+    EXPECT_EQ("s3", vector.back());
+
+    const Vector<std::string>& cv = vector;
+    EXPECT_EQ("s3", cv.back());
+}
+
+TEST(Vector, PopBack_Method) {
+    Vector<int> vector {2, 3, 4, 5};
+
+    vector.PopBack();
+    ASSERT_FALSE(vector.empty());
+    ASSERT_EQ(3, vector.Size());
+    EXPECT_EQ(4, vector.back());
+
+    vector.PopBack();
+    ASSERT_FALSE(vector.empty());
+    ASSERT_EQ(2, vector.Size());
+    EXPECT_EQ(3, vector.back());
+}
+
 
 
