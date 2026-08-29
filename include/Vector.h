@@ -30,6 +30,52 @@ public:
         capacity_ = size_;
     }
 
+    Vector(const Vector& other) : size_(other.size_), capacity_(other.size_) {
+        if (size_ == 0) return;
+
+        data_ = static_cast<T*>(::operator new(size_ * sizeof(T)));
+
+        try {
+            std::uninitialized_copy_n(other.data_, size_, data_);
+        } catch (...) {
+            ::operator delete(data_);
+            data_ = nullptr;
+            throw;
+        }
+    }
+
+    Vector& operator=(const Vector& other) {
+        if (this == &other) return *this;
+
+        if (other.size_ == 0) {
+            std::destroy_n(data_, size_);
+            ::operator delete(data_);
+            data_ = nullptr;
+            size_ = 0;
+            capacity_ = 0;
+
+            return *this;
+        }
+
+        T* newBlock = static_cast<T*>(::operator new(other.size_ * sizeof(T)));
+
+        try {
+            std::uninitialized_copy_n(other.data_, other.size_, newBlock);
+        } catch (...) {
+            ::operator delete(newBlock);
+            throw;
+        }
+
+        std::destroy_n(data_, size_);
+
+        ::operator delete(data_);
+        data_ = newBlock;
+        size_ = other.size_;
+        capacity_ = other.size_;
+
+        return *this;
+    }
+
     T& operator[](std::size_t index) noexcept;
     const T& operator[](std::size_t index) const noexcept;
 

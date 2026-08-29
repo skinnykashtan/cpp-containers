@@ -153,5 +153,42 @@ TEST(Vector, PopBack_Method) {
     EXPECT_EQ(3, vector.back());
 }
 
+TEST(Vector, Vector_Copy_Constructor) {
+    Vector<int> v1{1, 2, 3};
+    Vector<int> v2{v1};
+
+    ASSERT_EQ(3, v1.Size());
+    ASSERT_EQ(3, v2.Size());
+    EXPECT_EQ(1, v2[0]);
+    EXPECT_EQ(2, v2[1]);
+    EXPECT_EQ(3, v2[2]);
+
+    v1.PushBack(6);
+    v2.PushBack(4);
+    EXPECT_EQ(6, v1[3]);
+    EXPECT_EQ(4, v2[3]);
+}
+
+TEST(Vector, Vector_Copy_Assignment_Operator) {
+    Vector<int> v1{1,2,3};
+    Vector<int> v2{4,5,6};
+
+    v2 = v1;
+    ASSERT_EQ(3, v1.Size());
+    EXPECT_EQ(1, v1[0]);
+    EXPECT_EQ(2, v1[1]);
+    EXPECT_EQ(3, v1[2]);
+
+    ASSERT_EQ(3, v2.Size());
+    EXPECT_EQ(1, v2[0]);
+    EXPECT_EQ(2, v2[1]);
+    EXPECT_EQ(3, v2[2]);
+
+    v1.PushBack(6);
+    v2.PushBack(4);
+    EXPECT_EQ(6, v1[3]);
+    EXPECT_EQ(4, v2[3]);
+}
+
 
 

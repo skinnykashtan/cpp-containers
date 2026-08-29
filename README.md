@@ -26,6 +26,20 @@ After this ctor, `capacity == size`.
 <br><br>
 Tests: `Create_Object_With_Initializer_List`.
 
+### Copy constructor
+`Vector(const Vector& other)` takes the source by const ref. The init list sets `size_ = other.size_` and `capacity_ = other.size_` - a copy takes only the live objects, not spare capacity. If `other` had `reserve(1000)` with 3 elements, the copy allocates for 3, not 1000. `data_` starts as `nullptr`.
+If `size_ == 0` the ctor `return`s and never calls `::operator new(0)`.
+If `size_ > 0` it allocates raw storage (`::operator new(size_ * sizeof(T))`) and points `data_` at it. In `try`, `std::uninitialized_copy_n(other.data_, size_, data_)` copy-constructs the objects into that block. If a copy throws, the algorithm destroys the objects it already built; `catch` does `::operator delete(data_)`, sets `data_ = nullptr`, and rethrows so the new `Vector` is not left with a leaked block.
+
+Tests: `Vector_Copy_Constructor` - `{1, 2, 3}` copied; both `size == 3`, elements match, then independent `PushBack` (`6` vs `4`).
+
+### Copy assignment
+`Vector& operator=(const Vector& other)` takes `other` by const ref so the parameter is not copied. If `this == &other` it is self-assignment and the function `return *this` with no work.
+If `other.size_ == 0` it clears `*this`: `std::destroy_n(data_, size_)` runs `T` destructors on the live range, `::operator delete(data_)` frees the raw block, then `data_ = nullptr`, `size_ = 0`, `capacity_ = 0`, and `return *this`.
+Otherwise it allocates a new raw block `T* newBlock = static_cast<T*>(::operator new(other.size_ * sizeof(T)))`. In `try`, `std::uninitialized_copy_n(other.data_, other.size_, newBlock)` copy-constructs into that block. If a copy throws, the algorithm destroys the objects it already built; `catch` does `::operator delete(newBlock)` and rethrows - `*this` is unchanged. If the copy succeeds, `std::destroy_n(data_, size_)` destroys the old objects, `::operator delete(data_)` frees the old block, then `data_ = newBlock`, `size_ = other.size_`, `capacity_ = other.size_`. `return *this` so assignment can chain (`a = b = c`).
+
+Tests: `Vector_Copy_Assignment_Operator` - `v2 = v1` replaces `{4, 5, 6}` with `{1, 2, 3}`; `v1` unchanged, then independent `PushBack` (`6` vs `4`).
+
 ### ReAlloc
 `ReAlloc` is private: it grows the buffer. Callers use `PushBack`, not this function.
 If `newCapacity <= capacity_`, it returns.
