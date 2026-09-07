@@ -71,9 +71,37 @@ public:
         ::operator delete(data_);
         data_ = newBlock;
         size_ = other.size_;
-        capacity_ = other.size_;
+        capacity_ = size_;
 
         return *this;
+    }
+
+    Vector(Vector&& other) noexcept : data_(other.data_), size_(other.size_), capacity_(other.capacity_) {
+        other.data_ = nullptr;
+        other.size_ = 0;
+        other.capacity_ = 0;
+    }
+
+    Vector& operator=(Vector&& other) noexcept {
+        if (this == &other) return *this;
+
+        std::destroy_n(data_, size_);
+        ::operator delete(data_);
+
+        data_ = other.data_;
+        size_ = other.size_;
+        capacity_ = other.capacity_;
+
+        other.data_ = nullptr;
+        other.size_ = 0;
+        other.capacity_ = 0;
+
+        return *this;
+    }
+
+    ~Vector() {
+        std::destroy_n(data_, size_);
+        ::operator delete(data_);
     }
 
     T& operator[](std::size_t index) noexcept;

@@ -190,5 +190,33 @@ TEST(Vector, Vector_Copy_Assignment_Operator) {
     EXPECT_EQ(4, v2[3]);
 }
 
+TEST(Vector, Vector_Move_Constructor) {
+    Vector<std::string> v1{"a", "b", "c"};
+    Vector<std::string> v2{std::move(v1)};
+
+    ASSERT_EQ(0, v1.Size());
+    ASSERT_EQ(3, v2.Size());
+
+    EXPECT_EQ("a", v2[0]);
+    EXPECT_EQ("b", v2[1]);
+    EXPECT_EQ("c", v2[2]);
+}
+
+TEST(Vector, Vector_Move_Assignment_Operator) {
+    Vector<std::string> v1{"a", "b", "c"};
+    Vector<std::string> v2{"b", "c"};
+
+    ASSERT_EQ(3, v1.Size());
+    ASSERT_EQ(2, v2.Size());
+
+    v2 = std::move(v1);
+    ASSERT_EQ(0, v1.Size());
+    ASSERT_EQ(3, v2.Size());
+
+    EXPECT_EQ("a", v2[0]);
+    EXPECT_EQ("b", v2[1]);
+    EXPECT_EQ("c", v2[2]);
+}
+
 
 

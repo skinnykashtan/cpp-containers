@@ -40,6 +40,27 @@ Otherwise it allocates a new raw block `T* newBlock = static_cast<T*>(::operator
 
 Tests: `Vector_Copy_Assignment_Operator` - `v2 = v1` replaces `{4, 5, 6}` with `{1, 2, 3}`; `v1` unchanged, then independent `PushBack` (`6` vs `4`).
 
+### Move constructor
+
+`Vector(Vector&& other) noexcept`
+takes a `Vector` passed via `std::move(...)`. `std::move` does not move anything by itself - it casts the object to an rvalue (`xvalue`) so the move constructor can be selected.
+
+`noexcept` declares that this function does not throw. The compiler can then skip generating exception-handling / stack-unwinding paths for it, and containers can safely prefer move over copy (`move_if_noexcept`).
+
+Members are initialized by copying their values from `other` in the constructor initializer list (`data_`, `size_`, `capacity_`). That copies the pointer and the sizes - not the elements - so ownership of the buffer is transferred. In the body, the robbed object is left in a valid empty state: `data_ = nullptr`, `size_ = 0`, `capacity_ = 0`.
+
+Tests: **`Vector_Move_Constructor`** - after `v2{std::move(v1)}`, `v1` is empty and `v2` holds the original elements in order.
+
+### Move assignment
+
+`Vector& operator=(Vector&& other) noexcept`
+marked `noexcept`, so the compiler can skip stack-unwinding paths for this function (it does not throw).
+The first `if (this == &other)` handles self-move: if we try to move-assign an object to itself, return `*this` immediately and do nothing.
+`std::destroy_n(data_, size_)` destroys the live objects in the range `[data_, data_ + size_)`. Then `::operator delete(data_)` frees the raw storage pointed to by `data_`.
+Next, ownership is transferred: copy `other.data_`, `other.size_`, and `other.capacity_` into `*this`, then zero out `other` (`nullptr` / `0` / `0`) so it no longer owns the buffer. Finally return `*this`.
+
+Tests: **`Vector_Move_Assignment_Operator`** - after `v2 = std::move(v1)`, `v1` is empty, `v2` drops its old contents and owns `v1`'s elements.
+
 ### ReAlloc
 `ReAlloc` is private: it grows the buffer. Callers use `PushBack`, not this function.
 If `newCapacity <= capacity_`, it returns.
