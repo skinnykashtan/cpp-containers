@@ -20,6 +20,7 @@ enable_testing()
 
 add_executable(cpp_containers_tests
         tests/test_vector.cpp
+        tests/test_array.cpp
 )
 
 target_include_directories(cpp_containers_tests PRIVATE include)
