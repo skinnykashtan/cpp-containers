@@ -1,7 +1,6 @@
 #ifndef CPP_CONTAINERS_ARRAY_H
 #define CPP_CONTAINERS_ARRAY_H
 #include <algorithm>
-#include <complex>
 
 template <typename T, std::size_t N>
 class Array {
@@ -23,6 +22,14 @@ public:
 
      [[nodiscard]] constexpr size_t size() const noexcept {
         return N;
+    }
+
+    constexpr T& operator[](size_t index) {
+        return elems[index];
+    }
+
+    constexpr const T& operator[](size_t index) const {
+        return elems[index];
     }
 };
 
