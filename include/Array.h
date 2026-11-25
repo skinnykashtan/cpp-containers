@@ -31,6 +31,18 @@ public:
     constexpr const T& operator[](size_t index) const {
         return elems[index];
     }
+
+    template<std::ptrdiff_t Index>
+        requires(Index >= 0) && (Index < static_cast<std::ptrdiff_t>(N))
+    constexpr T& get() {
+        return elems[Index];
+    }
+
+    template<std::ptrdiff_t Index>
+        requires(Index >= 0) && (Index < static_cast<std::ptrdiff_t>(N))
+    constexpr const T& get() const {
+        return elems[Index];
+    }
 };
 
 #endif //CPP_CONTAINERS_ARRAY_H

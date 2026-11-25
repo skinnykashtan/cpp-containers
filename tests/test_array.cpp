@@ -18,3 +18,13 @@ TEST(Array, Index_Operator) {
     ASSERT_EQ(7, array[2]);
 }
 
+TEST(Array, Get_Method) {
+    Array<int, 5> array{1,2,3,4,5};
+    const Array<int, 5> array2{1,2,3,4,5};
+
+    ASSERT_EQ(2, array.get<1>());
+    ASSERT_EQ(5, array2.get<4>());
+
+    array.get<1>() = 3;
+    ASSERT_EQ(3, array.get<1>());
+}
